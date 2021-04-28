@@ -3,6 +3,12 @@ __pycache__/
 *.py[cod]
 *$py.class
 
+# mac stuff
+.DS_Store
+
+# saved funnelmaps
+funnelmaps/records/
+
 # C extensions
 *.so
 
