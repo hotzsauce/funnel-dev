@@ -132,7 +132,8 @@ class FunnelMap(abc.MutableMapping):
 
 	@classmethod
 	def from_dataframe(
-		self, df : DataFrame,
+		self,
+		df : DataFrame,
 		ids: str = 'index',
 	):
 		"""
