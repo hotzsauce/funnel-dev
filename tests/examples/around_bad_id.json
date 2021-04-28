@@ -1,0 +1,37 @@
+[
+    {
+        "id": "fruit",
+        "aliases": [
+            "orange",
+            "pear",
+            "apple"
+        ]
+    },
+    {
+        "ids": "meat",
+        "alias": [
+            "lamb",
+            "chicken",
+            "beef",
+            "pork"
+        ]
+    },
+    {
+        "names": "beverage",
+        "refs": [
+            "coffee",
+            "tea",
+            "water"
+        ]
+    },
+    {
+        "id": "plant",
+        "aliases": [
+            "hoya",
+            "monstera",
+            "wandering dude",
+            "pothos",
+            "philodendron"
+        ]
+    }
+]
