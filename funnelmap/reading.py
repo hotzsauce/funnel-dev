@@ -11,11 +11,15 @@ from funnelmap.funnel import FunnelMap
 from funnelmap.saving import retrieve_from_registry
 
 
-def read_csv(path: str, id_index: int = 0, **fmtparams):
+def read_csv(
+	path: str,
+	id_index: int = 0,
+	**fmtparams
+):
 	"""
-	construct a FunnelMap from a .csv file. assumed that the id is in the
-	first column (this can be changed via `id_index` parameter), and aliases
-	for that id are the remaining elements in the same row.
+	construct a FunnelMap from a .csv file. the location of the id is determined
+	by the `id_index` parameter, and aliases for that id are the remaining
+	elements in the same row.
 
 	Parameters
 	----------
@@ -23,6 +27,8 @@ def read_csv(path: str, id_index: int = 0, **fmtparams):
 		location of the .csv file holding ids and aliases
 	id_index : int ( = 0 )
 		column index of the id's
+	fmtparams : keyword arguments
+		formatting parameters that are passed to csv.reader
 
 	Returns
 	-------
@@ -58,9 +64,9 @@ def read_json(path: str):
 	be a list of dictionary elements structured like
 		{
 			'id' : id_0,
-				'aliases' : [
-					al_00, al_01, ..., al_0k
-				]
+			'aliases' : [
+				al_00, al_01, ..., al_0k
+			]
 		}
 
 	Parameters
