@@ -86,21 +86,21 @@ def read_json(path: str):
 `FunnelMap` also has a class method for constructing an instance from a `DataFrame` programatically:
 ```python
 def from_dataframe(
-		self, 
-		df : DataFrame,
-		ids: str = 'index',
-	):
-		"""
-		construct a FunnelMap from a pandas DataFrame.
-
-		Parameters
-		----------
-		df : pandas DataFrame
-			DataFrame that holds ids and aliases
-		ids : str ( = 'index')
-			location of ids in the DataFrame. if 'index' or 'column', those axis
-			labels are used as the ids, and the DataFrame entries are the aliases.
-		"""
+	self, 
+	df : DataFrame,
+	ids: str = 'index',
+):
+	"""
+	construct a FunnelMap from a pandas DataFrame.
+		
+	Parameters
+	----------
+	df : pandas DataFrame
+		DataFrame that holds ids and aliases
+	ids : str ( = 'index')
+		location of ids in the DataFrame. if 'index' or 'column', those axis
+		labels are used as the ids, and the DataFrame entries are the aliases.
+	"""
 ```
 
 Finally, there are `FunnelMap` methods for writing the ids and aliases to JSON strings and `DataFrame` objects:
@@ -115,7 +115,7 @@ def to_json(self, path: str = '', **kwargs):
 		file path. if not provided, the JSON is returned as a string
 	kwargs
 		optional keywords to pass to the json constructor
-    """
+    	"""
 
 def to_dataframe(self, ids: str = 'index'):
 	"""
