@@ -12,6 +12,13 @@ from funnelmap.saving import FunnelRecorder
 def iterable_not_str(obj):
 	return isinstance(obj, abc.Iterable) and not isinstance(obj, str)
 
+def empty_or_empty_iterable(obj):
+	if iterable_not_str(obj):
+		return all(empty_or_empty_iterable(o) for o in obj)
+	if obj:
+		return False
+	return True
+
 
 class FunnelMap(abc.MutableMapping):
 	"""
@@ -23,7 +30,11 @@ class FunnelMap(abc.MutableMapping):
 			mappings = obj
 
 			for k, viter in mappings.items():
-				if iterable_not_str(viter):
+
+				if empty_or_empty_iterable(viter):
+					self.__dict__[k] = k
+
+				elif iterable_not_str(viter):
 					for v in viter:
 						if v in mappings:
 							raise ValueError(f"{repr(v)} cannot be both an alias and id")
@@ -48,7 +59,6 @@ class FunnelMap(abc.MutableMapping):
 			#	guaranteed unique. just need to check for no alias-id collisions
 			ids = set()
 			for alias, id_ in obj.items():
-				print(alias, id_)
 				if alias in ids:
 					raise ValueError(f"{repr(alias)} cannot be both an alias and id")
 				ids.add(id_)
@@ -65,7 +75,7 @@ class FunnelMap(abc.MutableMapping):
 	@property
 	def aliases(self):
 		"""aliases of a FunnelMap in a list"""
-		return list(self.__dict__.keys())
+		return list(set(self.__dict__.keys()) - set(self.__dict__.values()))
 
 	def to_json(self, path: str = '', **kwargs):
 		"""

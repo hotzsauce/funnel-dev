@@ -31,6 +31,13 @@ dup_dict = {
 	'fruit': ['olive', 'avocado'],
 	'oil': {'canola', 'olive', 'avocado'}
 }
+empty_dict = {
+	'fish': ['salmon', 'tuna'],
+	'vegetable': '',
+	'fruit': [],
+	'oil': ('', ''),
+	'meat': {'', ('', '')}
+}
 
 class TestFunnel(unittest.TestCase):
 
@@ -47,6 +54,17 @@ class TestFunnel(unittest.TestCase):
 	def test_dict_init_duplicate_alias(self):
 		with self.assertRaises(KeyError):
 			fm = FunnelMap(dup_dict)
+
+	def test_dict_init_empty(self):
+		fm = FunnelMap(empty_dict)
+
+		self.assertEqual(fm['salmon'], 'fish')
+		self.assertEqual(fm['tuna'], 'fish')
+		self.assertEqual(fm['fish'], 'fish')
+		self.assertEqual(fm['vegetable'], 'vegetable')
+		self.assertEqual(fm['fruit'], 'fruit')
+		self.assertEqual(fm['oil'], 'oil')
+		self.assertEqual(fm['meat'], 'meat')
 
 	def test_ids_property(self):
 		ids = {'fish', 'vegetable', 'oil'}
@@ -102,4 +120,4 @@ class TestFunnel(unittest.TestCase):
 
 
 if __name__ == '__main__':
-	uittest.main()
+	unittest.main()
