@@ -14,6 +14,7 @@ from funnelmap.saving import retrieve_from_registry
 def read_csv(
 	path: str,
 	id_index: int = 0,
+	strict: bool = True,
 	**fmtparams
 ):
 	"""
@@ -27,6 +28,10 @@ def read_csv(
 		location of the .csv file holding ids and aliases
 	id_index : int ( = 0 )
 		column index of the id's
+	strict : bool ( = True )
+		in the case of duplicate aliases, determines if a KeyError should be
+		raised. if `strict = False`, no error is raised and the mapping to the
+		first id is preserved
 	fmtparams : keyword arguments
 		formatting parameters that are passed to csv.reader
 
@@ -53,12 +58,15 @@ def read_csv(
 			if id_ in maps:
 				raise KeyError(f"id {repr(id_)} in row {i} is already defined")
 
-			maps[id_] = set((al.strip() for al in id_and_aliases if al != ''))
+			maps[id_] = [al.strip() for al in id_and_aliases if al != '']
 
-	return FunnelMap(maps)
+	return FunnelMap(maps, strict)
 
 
-def read_json(path: str):
+def read_json(
+	path: str,
+	strict: bool = True
+):
 	"""
 	construct a FunnelMap from a .json file. the JSON structure is assumed to
 	be a list of dictionary elements structured like
@@ -73,6 +81,10 @@ def read_json(path: str):
 	----------
 	path : str | path-like
 		location of the .json file holding ids and aliases
+	strict : bool ( = True )
+		in the case of duplicate aliases, determines if a KeyError should be
+		raised. if `strict = False`, no error is raised and the mapping to the
+		first id is preserved
 
 	Returns
 	-------
@@ -90,12 +102,16 @@ def read_json(path: str):
 			if id_ in maps:
 				raise KeyError(f"id {repr(id_)} is defined more than once")
 
-			maps[id_] = set((al for al in dct['aliases']))
+			maps[id_] = [al for al in dct['aliases']]
 
-	return FunnelMap(maps)
+	return FunnelMap(maps, strict)
 
 
-def read_record(name: str, project: str = ''):
+def read_record(
+	name: str,
+	project: str = '',
+	strict: bool = True
+):
 	"""
 	retrieve the recorded json path from the stored registry by name of the json.
 
@@ -109,6 +125,10 @@ def read_record(name: str, project: str = ''):
 		are multiple and `project` is not provided, a ValueError is thrown. if
 		project is provided, the JSON with filename `name` in that project is
 		returned
+	strict : bool ( = True )
+		in the case of duplicate aliases, determines if a KeyError should be
+		raised. if `strict = False`, no error is raised and the mapping to the
+		first id is preserved
 	"""
 	json_file = retrieve_from_registry(name, project)
-	return read_json(json_file)
+	return read_json(json_file, strict)

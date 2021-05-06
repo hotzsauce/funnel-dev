@@ -25,9 +25,28 @@ class FunnelMap(abc.MutableMapping):
 	mapping arbitrary aliases to unique ids
 	"""
 
-	def __init__(self, obj = None):
+	def __init__(self, obj = None, strict = True):
 		if isinstance(obj, dict):
 			mappings = obj
+
+			def check_and_add(k, v):
+				if v in mappings:
+					raise ValueError(f"{repr(v)} cannot be both an alias and id")
+
+				if strict:
+					if v in self.__dict__:
+						id_ = repr(self.__dict__[v])
+						raise KeyError(f"alias{repr(v)} already references {id_}")
+					self.__dict__[v] = k
+
+				else:
+					# if `strict = False` and this is the second time `v` has been
+					#	passed as an alias, we want to keep the map to the first id
+					if v in self.__dict__:
+						pass
+					else:
+						self.__dict__[v] = k
+
 
 			for k, viter in mappings.items():
 
@@ -36,23 +55,10 @@ class FunnelMap(abc.MutableMapping):
 
 				elif iterable_not_str(viter):
 					for v in viter:
-						if v in mappings:
-							raise ValueError(f"{repr(v)} cannot be both an alias and id")
+						check_and_add(k, v)
 
-						if v in self.__dict__:
-							id_ = repr(self.__dict__[v])
-							raise KeyError(f"alias {repr(v)} already references {id_}")
-
-						self.__dict__[v] = k
 				else:
-					if viter in mappings:
-						raise ValueError(f"{repr(viter)} cannot be both an alias and id")
-
-					if viter in self.__dict__:
-						id_ = repr(self.__dict__[viter])
-						raise KeyError(f"alias {repr(viter)} already references {id_}")
-
-					self.__dict__[viter] = k
+					check_and_add(k, viter)
 
 		elif isinstance(obj, abc.MutableMapping):
 			# when creating from a non-dict mapping, aliases (the keys) are already
@@ -70,12 +76,23 @@ class FunnelMap(abc.MutableMapping):
 	@property
 	def ids(self):
 		"""ids of a FunnelMap in a list"""
-		return list(set(self.__dict__.values()))
+		# don't use python set() so as to keep insertion order
+		ids = []
+		for id_ in self.__dict__.values():
+			if id_ not in ids:
+				ids.append(id_)
+		return ids
 
 	@property
 	def aliases(self):
 		"""aliases of a FunnelMap in a list"""
-		return list(set(self.__dict__.keys()) - set(self.__dict__.values()))
+		# don't use python set() so as to keep insertion order
+		ids = self.ids
+		aliases = []
+		for alias in self.__dict__.keys():
+			if alias not in ids:
+				aliases.append(alias)
+		return aliases
 
 	def to_json(self, path: str = '', **kwargs):
 		"""
@@ -145,6 +162,7 @@ class FunnelMap(abc.MutableMapping):
 		self,
 		df : DataFrame,
 		ids: str = 'index',
+		strict: bool = True
 	):
 		"""
 		construct a FunnelMap from a pandas DataFrame.
@@ -156,18 +174,22 @@ class FunnelMap(abc.MutableMapping):
 		ids : str ( = 'index')
 			location of ids in the DataFrame. if 'index' or 'column', those axis
 			labels are used as the ids, and the DataFrame entries are the aliases.
+		strict : bool ( = True )
+			in the case of duplicate aliases, determines if a KeyError should be
+			raised. if `strict = False`, no error is raised and the mapping to the
+			first id is preserved
 		"""
 		if ids == 'index':
 			dct = df.to_dict(orient='index')
 			for k in dct.keys():
-				dct[k] = set((el for el in dct[k].values() if el))
-			return FunnelMap(dct)
+				dct[k] = [el for el in dct[k].values() if el]
+			return FunnelMap(dct, strict)
 
 		if ids == 'columns':
 			dct = df.to_dict(orient='list')
 			for k in dct.keys():
-				dct[k] = set((el for el in dct[k] if el))
-			return FunnelMap(dct)
+				dct[k] = [el for el in dct[k] if el]
+			return FunnelMap(dct, strict)
 
 		raise NotImplementedError(
 			f"cannot construct FunnelMap with ids parameter {ids}"

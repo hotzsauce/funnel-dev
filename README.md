@@ -61,8 +61,12 @@ def read_csv(
 		location of the .csv file holding ids and aliases
 	id_index : int ( = 0 )
 		column index of the id's
+	strict : bool ( = True )
+		in the case of duplicate aliases, determines if a KeyError should be
+		raised. if `strict = False`, no error is raised and the mapping to the
+		first id is preserved
 	fmtparams : keyword arguments
-	    formatting parameters that are passed to csv.reader
+		formatting parameters that are passed to csv.reader
 	"""
 	
 def read_json(path: str):
@@ -80,6 +84,10 @@ def read_json(path: str):
 	----------
 	path : str | path-like
 		location of the .json file holding ids and aliases
+	strict : bool ( = True )
+		in the case of duplicate aliases, determines if a KeyError should be
+		raised. if `strict = False`, no error is raised and the mapping to the
+		first id is preserved
 	"""
 ```
 
@@ -100,6 +108,10 @@ def from_dataframe(
 	ids : str ( = 'index')
 		location of ids in the DataFrame. if 'index' or 'column', those axis
 		labels are used as the ids, and the DataFrame entries are the aliases.
+	strict : bool ( = True )
+		in the case of duplicate aliases, determines if a KeyError should be
+		raised. if `strict = False`, no error is raised and the mapping to the
+		first id is preserved
 	"""
 ```
 
@@ -115,7 +127,7 @@ def to_json(self, path: str = '', **kwargs):
 		file path. if not provided, the JSON is returned as a string
 	kwargs
 		optional keywords to pass to the json constructor
-    	"""
+    """
 
 def to_dataframe(self, ids: str = 'index'):
 	"""
@@ -157,17 +169,3 @@ import funnelmap as fmap
 fm = fmap.from_record('meat_and_potatoes', project='dinner')
 print(fm.to_json()) # [{"id": "meat", "aliases": ["pork", "beef"]}, {"id": "potato", "aliases": ["russet"]}]
 ```
-
-
-
-
-
-
-
-
-
-
-
-
-
-

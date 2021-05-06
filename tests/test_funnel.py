@@ -66,6 +66,9 @@ class TestFunnel(unittest.TestCase):
 		self.assertEqual(fm['oil'], 'oil')
 		self.assertEqual(fm['meat'], 'meat')
 
+		self.assertEqual(len(fm.ids), 5)
+		self.assertEqual(len(fm.aliases), 2)
+
 	def test_ids_property(self):
 		ids = {'fish', 'vegetable', 'oil'}
 		fm = FunnelMap(good_dict)
