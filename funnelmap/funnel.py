@@ -203,6 +203,9 @@ class FunnelMap(abc.MutableMapping):
 		)
 
 	def __setitem__(self, alias, id_):
+		if id_ in self.__dict__:
+			raise ValueError(f"{repr(id_)} cannot be both an alias and an id")
+
 		self.__dict__[alias] = id_
 
 	def __getitem__(self, alias):
