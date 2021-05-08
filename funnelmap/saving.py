@@ -6,8 +6,6 @@ from __future__ import annotations
 import pathlib
 import json
 
-from rich import print
-
 # create records directory
 records_dir = pathlib.Path(__file__).parent / 'records'
 if not records_dir.exists():
