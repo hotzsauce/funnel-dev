@@ -31,7 +31,14 @@ class FunnelMap(abc.MutableMapping):
 
 			def check_and_add(k, v):
 				if v in mappings:
-					raise ValueError(f"{repr(v)} cannot be both an alias and id")
+					if k == v:
+						# if this alias is referencing this key (as opposed to
+						#	referencing another id in mappings, don't raise
+						pass
+					else:
+						raise ValueError(
+							f"{repr(v)} cannot be both an alias and id"
+						)
 
 				if strict:
 					if v in self.__dict__:
